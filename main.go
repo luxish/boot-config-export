@@ -85,6 +85,8 @@ func main() {
 		processFile(config.fileName, config.outputDir)
 	} else if config.directory != "" {
 		processDir(config.directory, config.outputDir)
+	} else {
+		panic("No options found. Run with flag -h to check the usage.")
 	}
 
 	elapsed := time.Since(start)
