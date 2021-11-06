@@ -4,7 +4,11 @@ Utility CLI to convert [Spring Boot Yaml configuration](https://docs.spring.io/s
 
 ## Usage
 
-If you have Go installed you can run `go run github.com/luxish/boot-config-export -f /path/to/my/file.yaml`
+If you have Go installed you can run:
+```
+go get github.com/luxish/boot-config-export
+go run github.com/luxish/boot-config-export -h
+```
 
 ## Options
 
