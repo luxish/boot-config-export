@@ -1,0 +1,24 @@
+email: test@test.com
+simpleton.demo.prop: test
+spring:
+  profiles:
+    active: dev
+  main:
+    banner-mode: off
+  server: 
+    port: 9999
+  other-key: asd
+  arr:
+  - "item1"
+  - "item2"
+  - "item3"
+arrObjects:
+- name: "item1"
+  value: "val1"
+- name: "item2"
+  value: "val2"
+
+logging:
+  level:
+    org.springframework: ERROR
+
