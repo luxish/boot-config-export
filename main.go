@@ -41,6 +41,12 @@ func processDir(dirPath string, outDir string) {
 }
 
 func processFile(filePath string, outDir string) {
+
+	if !IsYamlFile(filePath) {
+		fmt.Println("Skipped file: " + filePath)
+		return
+	}
+
 	// Read the provided Yaml file
 	root := YamlFileToMap(filePath)
 
