@@ -33,7 +33,7 @@ func YamlFileToMap(filePath string) map[interface{}]interface{} {
 
 // Creates an output channel that accepts strings. All the lines will be appended
 // to the file contents.
-func MapToOutputFile(fileName string) chan string {
+func ToOutputFile(fileName string) chan string {
 	in := make(chan string)
 	outFile, err := os.Create(fileName)
 	if err != nil {

@@ -64,7 +64,7 @@ func processFile(filePath string, outDir string) {
 		os.Mkdir(outDir, 0755)
 	}
 	outFileName := ResolveOutputFile(filePath, outDir)
-	out := MapToOutputFile(outFileName)
+	out := ToOutputFile(outFileName)
 	for _, key := range envMapKeys {
 		out <- (key + "=" + envMap[key])
 	}

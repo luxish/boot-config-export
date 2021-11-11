@@ -1,5 +1,6 @@
 email: test@test.com
 simpleton.demo.prop: test
+fl: 1.1
 spring:
   profiles:
     active: dev
