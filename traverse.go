@@ -29,7 +29,9 @@ func TraverseYaml(root map[interface{}]interface{}) map[string]string {
 		travArr = travArr[:len(travArr)-1]
 
 		switch kind := reflect.TypeOf(lastEl.Value).Kind(); kind {
-		case reflect.Int, reflect.Bool, reflect.String, reflect.Float32, reflect.Float64:
+		case reflect.String:
+			envMap[toEnv(lastEl.Path)] = fmt.Sprintf("\"%s\"", lastEl.Value)
+		case reflect.Int, reflect.Bool, reflect.Float32, reflect.Float64:
 			// Leaf values can be added to the output map
 			envMap[toEnv(lastEl.Path)] = fmt.Sprintf("%v", lastEl.Value)
 		case reflect.Slice:
