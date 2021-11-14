@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -50,6 +52,16 @@ func ToOutputFile(fileName string) chan string {
 		}
 	}()
 	return in
+}
+
+func RunTemplate(tmplFilePath string, envValues map[string]string, outFilePath string) {
+	// TODO implement
+	cmFile, err := os.Create(outFilePath)
+	tmpl := template.Must(template.New(path.Base(tmplFilePath)).ParseFiles(tmplFilePath))
+	err = tmpl.Execute(cmFile, struct{ Env map[string]string }{envValues})
+	if err != nil {
+		panic("Can not execute " + err.Error())
+	}
 }
 
 func ChangeExtensionFromFileName(name string) string {

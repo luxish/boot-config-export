@@ -69,6 +69,13 @@ func processFile(filePath string, outDir string) {
 		out <- (key + "=" + envMap[key])
 	}
 	close(out)
+
+	// Run template (template path, template param map, output file)
+
+	outCmFileName := path.Join(outDir, "configmap.yaml")
+	tmplPath := "template/configmap.yaml.tmpl"
+
+	RunTemplate(tmplPath, envMap, outCmFileName)
 }
 
 func main() {
