@@ -1,17 +1,17 @@
 # boot-config-export
 
-Utility CLI to convert [Spring Boot Yaml configuration](https://docs.spring.io/spring-boot/docs/2.5.6/reference/htmlsingle/#features.external-config) into external configuration (as environment variables). The variables are transformed based on the rules described [here](https://docs.spring.io/spring-boot/docs/2.5.6/reference/htmlsingle/#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables)
+Utility CLI to convert [Spring Boot YAML configuration](https://docs.spring.io/spring-boot/docs/2.5.6/reference/htmlsingle/#features.external-config) into external configuration (as environment variables). The variables are transformed based on the rules described [here](https://docs.spring.io/spring-boot/docs/2.5.6/reference/htmlsingle/#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables)
 
 ## Usage
 
 If you have Go installed you can run:
 
 ```bash
-go get github.com/luxish/boot-config-export
+go install github.com/luxish/boot-config-export@latest
 
-go run github.com/luxish/boot-config-export -h
+go run github.com/luxish/boot-config-export@latest -h
 
-go run github.com/luxish/boot-config-export -f example/test.yaml
+go run github.com/luxish/boot-config-export@latest -f example/test.yaml
 ```
 
 ## Options
@@ -20,8 +20,6 @@ The options for the CLI can be checked by running  `go run github.com/luxish/boo
 
 | Option      | Default | Description |
 |-------------|---------|-------------|
-| -f \<path>  | empty   | If specified, the program will read the Yaml file and turn it to an `.env` file.|
-| -d \<dir>   | empty   | If specified, the program will read all yaml files and turn them to `.env` files.|
-| -o \<output>| "out"   | The output folder for the `.env` files.|
-
-The configuration is interpreted in this particular order. If the "file" configuration is specified, the "directory" configuration is ignored.
+| -f \<path>  | empty   | The program will read the YAML file and will export the configuration in the desired format. |
+| -t \<type>  | "env"   | If specified the output will be changed based on the type. Options: **env** (environment variables), **cm** (K8s ConfigMap resource) |
+| -o \<output>| "out"   | The output location. |

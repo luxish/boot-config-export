@@ -23,4 +23,3 @@ arrObjects:
 logging:
   level:
     org.springframework: ERROR
-

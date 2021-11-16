@@ -15,8 +15,8 @@ type Node struct {
 
 // Function used to traverse YAML contents based on an initial map. It also returns a map, with a
 // flattened representation. The key is a JSON-like path of the (primitive) value.
-func TraverseYaml(root map[interface{}]interface{}) map[string]string {
-	envMap := make(map[string]string)
+func TraverseYaml(root map[interface{}]interface{}) map[string]interface{} {
+	envMap := make(map[string]interface{})
 	travArr := make([]Node, 0)
 
 	for key, val := range root {
@@ -29,11 +29,9 @@ func TraverseYaml(root map[interface{}]interface{}) map[string]string {
 		travArr = travArr[:len(travArr)-1]
 
 		switch kind := reflect.TypeOf(lastEl.Value).Kind(); kind {
-		case reflect.String:
-			envMap[toEnv(lastEl.Path)] = fmt.Sprintf("\"%s\"", lastEl.Value)
-		case reflect.Int, reflect.Bool, reflect.Float32, reflect.Float64:
+		case reflect.Int, reflect.Bool, reflect.Float32, reflect.Float64, reflect.String:
 			// Leaf values can be added to the output map
-			envMap[toEnv(lastEl.Path)] = fmt.Sprintf("%v", lastEl.Value)
+			envMap[toEnv(lastEl.Path)] = lastEl.Value
 		case reflect.Slice:
 			for idx, val := range lastEl.Value.([]interface{}) {
 				travArr = append(travArr, Node{fmt.Sprintf("%s.%v", lastEl.Path, idx), val})
@@ -49,5 +47,9 @@ func TraverseYaml(root map[interface{}]interface{}) map[string]string {
 }
 
 func toEnv(in string) string {
-	return strings.ReplaceAll(strings.ToUpper(strings.ReplaceAll(in, ".", "_")), "-", "")
+	str := strings.ToUpper(strings.ReplaceAll(in, ".", "_"))
+	str = strings.ReplaceAll(str, "[", "_")
+	str = strings.ReplaceAll(str, "]", "")
+	str = strings.ReplaceAll(str, "-", "")
+	return str
 }

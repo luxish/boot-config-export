@@ -3,79 +3,39 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"path"
-	"sort"
 	"time"
 )
 
 // Configuration structure for the CLI
 type Config struct {
 	fileName  string
-	directory string
+	outType   string
 	outputDir string
 }
 
 // Parses the configuration from the program arguments
 func ParseConfig() *Config {
-	var fileName, dir, outputDir string
+	var fileName, outType, outputDir string
 	flag.StringVar(&fileName, "f", "", "File to import")
-	flag.StringVar(&dir, "d", "", "Directory for input files")
+	flag.StringVar(&outType, "t", "env", "Output type: env, cm")
 	flag.StringVar(&outputDir, "o", "out", "Directory for the output files")
 	flag.Parse()
-	return &Config{fileName, dir, outputDir}
+	return &Config{fileName, outType, outputDir}
 }
 
-func processDir(dirPath string, outDir string) {
-	files, err := ioutil.ReadDir(dirPath)
-	if err != nil {
-		panic("Could not read directory " + dirPath)
-	}
-	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
-		processFile(path.Join(dirPath, file.Name()), outDir)
-	}
-}
-
-func processFile(filePath string, outDir string) {
-
+func processFile(filePath string, outType OutType, outDir string) {
 	if !IsYamlFile(filePath) {
-		fmt.Println("Skipped file: " + filePath)
+		fmt.Println("Not a Yaml file " + filePath)
 		return
 	}
 
 	// Read the provided Yaml file
 	root := YamlFileToMap(filePath)
-
 	// Process the contents
 	envMap := TraverseYaml(root)
 
-	// Create the file the env file
-	envMapKeys := make([]string, 0)
-	for k := range envMap {
-		envMapKeys = append(envMapKeys, k)
-	}
-	sort.Strings(envMapKeys)
-
-	if _, err := os.Stat(outDir); os.IsNotExist(err) {
-		os.Mkdir(outDir, 0755)
-	}
-	outFileName := ResolveOutputFile(filePath, outDir)
-	out := ToOutputFile(outFileName)
-	for _, key := range envMapKeys {
-		out <- (key + "=" + envMap[key])
-	}
-	close(out)
-
-	// Run template (template path, template param map, output file)
-
-	outCmFileName := path.Join(outDir, "configmap.yaml")
-	tmplPath := "template/configmap.yaml.tmpl"
-
-	RunTemplate(tmplPath, envMap, outCmFileName)
+	ctx := ExportContext{outType, outDir, FileName(filePath)}
+	ctx.RunTemplate(SortedMap(envMap))
 }
 
 func main() {
@@ -92,15 +52,11 @@ func main() {
 	// Parse configuration from CLI.
 	config := ParseConfig()
 
-	// All configurations exclude each other. In case multiple configurations are specified
-	// the application will execute the first one in the order: file, dir.
-	if config.fileName != "" {
-		processFile(config.fileName, config.outputDir)
-	} else if config.directory != "" {
-		processDir(config.directory, config.outputDir)
-	} else {
-		panic("No options found. Run with flag -h to check the usage.")
+	if config.fileName == "" {
+		panic("No file to process. Run with flag -h to check the usage.")
 	}
+
+	processFile(config.fileName, OutTypeFromString(config.outType), config.outputDir)
 
 	elapsed := time.Since(start)
 	fmt.Printf("Done in %v", elapsed)

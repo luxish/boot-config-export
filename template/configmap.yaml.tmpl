@@ -1,8 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: configmap
+  name: "ExportedConfig"
+  labels: {}
+  annotations: {}
 data:
-  {{- range $key, $value := .Env }}
-  {{ $key }}: {{ $value }}
+  {{- range $key, $value := . }}
+  {{ $key }}: {{ quote $value }}
   {{- end}}
