@@ -34,7 +34,7 @@ func processFile(filePath string, outType OutType, outDir string) {
 	// Process the contents
 	envMap := TraverseYaml(root)
 
-	ctx := ExportContext{outType, outDir, FileName(filePath)}
+	ctx := ExportContext{outType, outDir, ExtractFileName(filePath)}
 	ctx.RunTemplate(SortedMap(envMap))
 }
 

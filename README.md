@@ -16,7 +16,7 @@ go run github.com/luxish/boot-config-export@latest -f example/test.yaml
 
 ## Options
 
-The options for the CLI can be checked by running  `go run github.com/luxish/boot-config-export -h`
+The options for the CLI can be checked by running  `go run github.com/luxish/boot-config-export@latest -h`
 
 | Option      | Default | Description |
 |-------------|---------|-------------|

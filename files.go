@@ -85,8 +85,8 @@ func IsYamlFile(filePath string) bool {
 	return ext == YAML_FILE_EXT || ext == YML_FILE_EXT
 }
 
-func FileName(filePath string) string {
-	return strings.TrimRight(strings.TrimRight(filepath.Base(filePath), YAML_FILE_EXT), YML_FILE_EXT)
+func ExtractFileName(filePath string) string {
+	return strings.TrimRight(filepath.Base(filePath), filepath.Ext(filePath))
 }
 
 func OutTypeFromString(str string) OutType {
