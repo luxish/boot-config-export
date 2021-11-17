@@ -28,6 +28,10 @@ func TraverseYaml(root map[interface{}]interface{}) map[string]interface{} {
 		lastEl := travArr[len(travArr)-1]
 		travArr = travArr[:len(travArr)-1]
 
+		if lastEl.Value == nil {
+			continue
+		}
+
 		switch kind := reflect.TypeOf(lastEl.Value).Kind(); kind {
 		case reflect.Int, reflect.Bool, reflect.Float32, reflect.Float64, reflect.String:
 			// Leaf values can be added to the output map
