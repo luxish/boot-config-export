@@ -24,7 +24,7 @@ const (
 	TYPE_ENVFILE   OutType = "env"
 )
 
-//go:embed template/*
+//go:embed template/config.env.tmpl template/configmap.yaml.tmpl
 var resources embed.FS
 
 var TYPE_TO_TEMPLATE_MAP = map[OutType]string{
