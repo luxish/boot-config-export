@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -22,6 +23,9 @@ const (
 	TYPE_CONFIGMAP OutType = "cm"
 	TYPE_ENVFILE   OutType = "env"
 )
+
+//go:embed template/*
+var resources embed.FS
 
 var TYPE_TO_TEMPLATE_MAP = map[OutType]string{
 	TYPE_ENVFILE:   "template/config.env.tmpl",
@@ -58,7 +62,7 @@ func (ctx *ExportContext) RunTemplate(envValues map[string]interface{}) {
 		panic(fmt.Sprintf("Can not create file %s: %s", outFileName, err.Error()))
 	}
 
-	tmpl := template.Must(template.New(path.Base(tmplPath)).Funcs(createFuncMapForTemplates()).ParseFiles(tmplPath))
+	tmpl := template.Must(template.New(path.Base(tmplPath)).Funcs(createFuncMapForTemplates()).ParseFS(resources, tmplPath))
 	err = tmpl.Execute(outFile, envValues)
 	if err != nil {
 		panic("Can not execute " + err.Error())
