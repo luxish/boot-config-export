@@ -17,43 +17,38 @@ import (
 type OutType string
 
 const (
-	YAML_FILE_EXT          = ".yaml"
-	YML_FILE_EXT           = ".yml"
-	ENV_FILE_EXT           = ".env"
-	TYPE_CONFIGMAP OutType = "cm"
-	TYPE_ENVFILE   OutType = "env"
+	YAML_FILE_EXT              = ".yaml"
+	YML_FILE_EXT               = ".yml"
+	ENV_FILE_EXT               = ".env"
+	TYPE_ENVFILE       OutType = "env"
+	TYPE_CONFIGMAP     OutType = "cm"
+	TYPE_HELMCONFIGMAP OutType = "helm"
 )
 
 //go:embed template/config.env.tmpl template/configmap.yaml.tmpl
 var resources embed.FS
 
 var TYPE_TO_TEMPLATE_MAP = map[OutType]string{
-	TYPE_ENVFILE:   "template/config.env.tmpl",
-	TYPE_CONFIGMAP: "template/configmap.yaml.tmpl",
+	TYPE_ENVFILE:       "template/config.env.tmpl",
+	TYPE_CONFIGMAP:     "template/configmap.yaml.tmpl",
+	TYPE_HELMCONFIGMAP: "template/helmconfigmap.yaml.tmpl",
 }
 
 var TYPE_TO_EXT_MAP = map[OutType]string{
-	TYPE_ENVFILE:   ENV_FILE_EXT,
-	TYPE_CONFIGMAP: YAML_FILE_EXT,
+	TYPE_ENVFILE:       ENV_FILE_EXT,
+	TYPE_CONFIGMAP:     YML_FILE_EXT,
+	TYPE_HELMCONFIGMAP: YML_FILE_EXT,
 }
 
-type ExportContext struct {
+type TemplateExportContext struct {
 	OutType  OutType
 	OutDir   string
 	FileName string
 }
 
-func (ctx *ExportContext) TemplatePath() string {
-	return TYPE_TO_TEMPLATE_MAP[ctx.OutType]
-}
-
-func (ctx *ExportContext) OutputFile() string {
-	return path.Join(ctx.OutDir, ctx.FileName) + TYPE_TO_EXT_MAP[ctx.OutType]
-}
-
-func (ctx *ExportContext) RunTemplate(envValues map[string]interface{}) {
-	tmplPath := ctx.TemplatePath()
-	outFileName := ctx.OutputFile()
+func (ctx *TemplateExportContext) RunTemplate(envValues interface{}) {
+	tmplPath := TYPE_TO_TEMPLATE_MAP[ctx.OutType]
+	outFileName := path.Join(ctx.OutDir, ctx.FileName) + TYPE_TO_EXT_MAP[ctx.OutType]
 
 	ensureDirExists(ctx.OutDir)
 	outFile, err := os.Create(outFileName)
