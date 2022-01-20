@@ -23,19 +23,19 @@ func ParseConfig() *Config {
 	return &Config{fileName, outType, outputDir}
 }
 
-func processFile(filePath string, outType OutType, outDir string) {
-	if !IsYamlFile(filePath) {
-		fmt.Println("Not a Yaml file " + filePath)
+func processFile(config Config) {
+	if !IsYamlFile(config.fileName) {
+		fmt.Println("Not a Yaml file " + config.fileName)
 		return
 	}
 
 	// Read the provided Yaml file
-	root := YamlFileToMap(filePath)
+	root := YamlFileToMap(config.fileName)
 	// Process the contents
 	envMap := TraverseYaml(root)
 
-	ctx := ExportContext{outType, outDir, ExtractFileName(filePath)}
-	ctx.RunTemplate(SortedMap(envMap))
+	extConfig := CreateExternalConfig(config, envMap)
+	extConfig.Transform()
 }
 
 func main() {
@@ -56,7 +56,7 @@ func main() {
 		panic("No file to process. Run with flag -h to check the usage.")
 	}
 
-	processFile(config.fileName, OutTypeFromString(config.outType), config.outputDir)
+	processFile(*config)
 
 	elapsed := time.Since(start)
 	fmt.Printf("Done in %v", elapsed)
