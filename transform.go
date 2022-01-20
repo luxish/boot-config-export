@@ -1,5 +1,13 @@
 package main
 
+type OutType string
+
+const (
+	TYPE_ENVFILE       OutType = "env"
+	TYPE_CONFIGMAP     OutType = "cm"
+	TYPE_HELMCONFIGMAP OutType = "helm"
+)
+
 type ExternalConfig interface {
 	Transform()
 }
@@ -13,7 +21,7 @@ type EnvFileExternalConfig struct {
 
 func (envFileCtx EnvFileExternalConfig) Transform() {
 	ctx := TemplateExportContext{TYPE_ENVFILE, envFileCtx.OutDir, envFileCtx.FileName}
-	ctx.RunTemplate(envFileCtx.Values)
+	ctx.RunTemplate(SortedEnvVarMap(envFileCtx.Values))
 }
 
 // K8s ConfigMap file external configuration
@@ -25,18 +33,7 @@ type ConfigMapFileExternalConfig struct {
 
 func (cmFileCtx ConfigMapFileExternalConfig) Transform() {
 	ctx := TemplateExportContext{TYPE_CONFIGMAP, cmFileCtx.OutDir, cmFileCtx.FileName}
-	ctx.RunTemplate(cmFileCtx.Values)
-}
-
-// Helm ConfigMap
-type HelmConfigMapFileExternalConfig struct {
-	OutDir   string
-	FileName string
-	Values   map[string]interface{}
-}
-
-func (helmFileCtx HelmConfigMapFileExternalConfig) Transform() {
-	// TODO implement
+	ctx.RunTemplate(SortedEnvVarMap(cmFileCtx.Values))
 }
 
 // Factory function
@@ -45,8 +42,6 @@ func CreateExternalConfig(cfg Config, values map[string]interface{}) ExternalCon
 	switch cfg.outType {
 	case "cm":
 		return ConfigMapFileExternalConfig{cfg.outputDir, fileName, values}
-	case "helm":
-		return HelmConfigMapFileExternalConfig{cfg.outputDir, fileName, values}
 	default:
 		return EnvFileExternalConfig{cfg.outputDir, fileName, values}
 	}

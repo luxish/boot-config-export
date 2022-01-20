@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"reflect"
-	"strings"
 )
 
 // Structure used to traverse a YAML file. The path is the nodes path from the root (JSON path like)
@@ -35,7 +34,7 @@ func TraverseYaml(root map[interface{}]interface{}) map[string]interface{} {
 		switch kind := reflect.TypeOf(lastEl.Value).Kind(); kind {
 		case reflect.Int, reflect.Bool, reflect.Float32, reflect.Float64, reflect.String:
 			// Leaf values can be added to the output map
-			envMap[toEnv(lastEl.Path)] = lastEl.Value
+			envMap[lastEl.Path] = lastEl.Value
 		case reflect.Slice:
 			for idx, val := range lastEl.Value.([]interface{}) {
 				travArr = append(travArr, Node{fmt.Sprintf("%s.%v", lastEl.Path, idx), val})
@@ -48,12 +47,4 @@ func TraverseYaml(root map[interface{}]interface{}) map[string]interface{} {
 	}
 
 	return envMap
-}
-
-func toEnv(in string) string {
-	str := strings.ToUpper(strings.ReplaceAll(in, ".", "_"))
-	str = strings.ReplaceAll(str, "[", "_")
-	str = strings.ReplaceAll(str, "]", "")
-	str = strings.ReplaceAll(str, "-", "")
-	return str
 }
