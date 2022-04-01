@@ -5,19 +5,43 @@ Utility CLI to convert [Spring Boot YAML configuration](https://docs.spring.io/s
 
 ## Usage
 
-If Go version 1.16+ is installed installed:
+With Go version 1.16+:
 
 ```bash
 go install github.com/luxish/boot-config-export@latest
 
 go run github.com/luxish/boot-config-export@latest -h
-
-go run github.com/luxish/boot-config-export@latest -f example/test.yaml
 ```
 
+File to export:
+```yml
+# application.yaml
+spring:
+  profiles:
+    active: dev
+  main:
+    banner-mode: off
+  server: 
+    port: 9999
+```
 
-| <div style="width:100px">Option</div> | Default | Description |
-|---------------|---------|-------------|
-| -f \<path>    | empty   | The program will read the YAML file and will export the configuration in the desired format. |
-| -t \<type>    | env     | If specified the output will be changed based on the type. Options: **env** (environment variables), **cm** (K8s ConfigMap resource) |
-| -o \<output>  | empty   | Output file name. |
+```
+> go run github.com/luxish/boot-config-export -f application.yaml
+SPRING_MAIN_BANNERMODE=false 
+SPRING_PROFILES_ACTIVE="dev"
+SPRING_SERVER_PORT=9999
+```
+
+```
+> go run github.com/luxish/boot-config-export -f application.yaml -t cm
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "ExportedConfig"
+  labels: {}
+  annotations: {}
+data:
+  SPRING_MAIN_BANNERMODE: "false"
+  SPRING_PROFILES_ACTIVE: "dev"
+  SPRING_SERVER_PORT: "9999"
+```
