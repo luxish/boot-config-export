@@ -20,20 +20,22 @@ spring:
   profiles:
     active: dev
   main:
-    banner-mode: off
+    banner-mode: "off"
   server: 
     port: 9999
 ```
 
 ```
 > go run github.com/luxish/boot-config-export -f application.yaml
-SPRING_MAIN_BANNERMODE=false 
+
+SPRING_MAIN_BANNERMODE="off" 
 SPRING_PROFILES_ACTIVE="dev"
 SPRING_SERVER_PORT=9999
 ```
 
 ```
 > go run github.com/luxish/boot-config-export -f application.yaml -t cm
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -41,7 +43,7 @@ metadata:
   labels: {}
   annotations: {}
 data:
-  SPRING_MAIN_BANNERMODE: "false"
+  SPRING_MAIN_BANNERMODE: "off"
   SPRING_PROFILES_ACTIVE: "dev"
   SPRING_SERVER_PORT: "9999"
 ```
